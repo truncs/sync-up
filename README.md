@@ -12,10 +12,10 @@ Sync Up is an application to sync realtime presentations on embedded devices.
 
         mvn package
 
-* To setup the h2 database run.
+* To setup the MySQL database run.
 
-        java -jar target/dropwizard-example-0.3.0-SNAPSHOT.jar setup example.yml
+        java -jar target/sync-up-0.1.0-SNAPSHOT.jar setup example.yml
 
 * To run the server run.
 
-        java -jar target/dropwizard-example-0.3.0-SNAPSHOT.jar server example.yml
+        java -jar target/sync-up-0.1.0-SNAPSHOT.jar server example.yml
