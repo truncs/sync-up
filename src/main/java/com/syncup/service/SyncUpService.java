@@ -46,7 +46,7 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         final Template template = configuration.buildTemplate();
 
         final DatabaseFactory factory = new DatabaseFactory(environment);
-        final Database db = factory.build(configuration.getDatabaseConfiguration(), "h2");
+        final Database db = factory.build(configuration.getDatabaseConfiguration(), "mysql");
         final PeopleDAO peopleDAO = db.onDemand(PeopleDAO.class);
 
 
