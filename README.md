@@ -8,7 +8,7 @@ Sync Up is an application to sync realtime presentations on embedded devices.
 
 * Fill in the database details in example.yml, it assumes that you have a MySQL database at your end
 
-* To package the example run.
+* To package the service run.
 
         mvn package
 
