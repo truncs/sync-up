@@ -1,5 +1,7 @@
 package com.syncup.service.core;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * Created with IntelliJ IDEA.
  * User: aditya
@@ -7,6 +9,8 @@ package com.syncup.service.core;
  * Time: 5:57 AM
  * To change this template use File | Settings | File Templates.
  */
+
+@JsonIgnoreProperties({"salt"})
 public class User {
     private long id;
     private String name;

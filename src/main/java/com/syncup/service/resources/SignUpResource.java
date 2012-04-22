@@ -13,6 +13,7 @@ import com.syncup.service.db.UserDAO;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -29,11 +30,10 @@ public class SignUpResource {
     }
 
     @POST
-    public void createUser(User user) {
-        // TODO: Add the null thing in user object itself
+    public Response createUser(User user) {
+
         if (user.getLoginId() == null || user.getPassword() == null) {
-            System.out.println("here");
-            //throw new WebApplicationException(400);
+            throw new WebApplicationException(400);
         }
         if (userDAO.findByLoginId(user.getLoginId()) != null)
             throw new WebApplicationException(409);
@@ -41,7 +41,8 @@ public class SignUpResource {
         String password = DigestUtils.sha(user.getPassword() + user.getSalt()).toString();
         user.setPassword(password);
         final long personId = userDAO.create(user);
-        // TODO: Return only the status and restrict leak of important data
+
+        return Response.ok().build();
     }
 
     @GET

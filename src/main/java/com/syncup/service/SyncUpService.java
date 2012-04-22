@@ -55,6 +55,7 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         environment.addResource(new PeopleResource(peopleDAO));
         environment.addResource(new PersonResource(peopleDAO));
         environment.addResource(new SignUpResource(userDAO));
+        environment.addResource(new LogInResource(userDAO));
     }
 
 }

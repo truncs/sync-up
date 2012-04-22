@@ -9,7 +9,7 @@ findById() ::= <<
 >>
 
 findByLoginId() ::= <<
-  select loginId from user where loginId = :loginId
+  select id, name, loginId, password, emailId, salt, sessionKe = :loginId
 >>
 
 create() ::= <<
