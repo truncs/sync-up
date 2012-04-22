@@ -1,0 +1,21 @@
+group UserDAO;
+
+createUserTable() ::= <<
+  create table user (id Serial primary key, name varchar(255), loginId varchar(100), password varchar(300), emailId varchar(255), salt varchar(50), sessionKey varchar(255))
+>>
+
+findById() ::= <<
+  select id, name, loginId, password, emailId, salt, sessionKey from user where id = :id
+>>
+
+findByLoginId() ::= <<
+  select loginId from user where loginId = :loginId
+>>
+
+create() ::= <<
+  insert into user (name, loginId, password, emailId, salt, sessionKey) values (:name, :loginId, :password, :emailId, :salt,:sessionKey)
+>>
+
+findAll() ::= <<
+  select id, name, loginId, password, emailId, salt, sessionKey from user
+>>
