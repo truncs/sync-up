@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.common.cache.Cache;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -38,9 +39,11 @@ import org.apache.commons.lang.RandomStringUtils;
 public class LogInResource {
 
     private final UserDAO userDAO;
+    private final Cache<String, String> cache;
 
-    public LogInResource (UserDAO userDAO) {
+    public LogInResource (UserDAO userDAO, Cache<String, String> cache) {
         this.userDAO = userDAO;
+        this.cache = cache;
     }
 
     @POST
@@ -63,12 +66,15 @@ public class LogInResource {
         LogInResponse response = new LogInResponse();
         response.setLoginId(user.getLoginId());
         response.setNonce(request.getNonce());
-        UUID uuid = UUID.randomUUID();
-        String sessionKey = ((Long)uuid.getMostSignificantBits()).toString() + ((Long)uuid.getLeastSignificantBits()).toString();
+        String sessionKey;
+        if (!cache.asMap().containsKey(user.getLoginId())) {
+            UUID uuid = UUID.randomUUID();
+            sessionKey = ((Long)uuid.getMostSignificantBits()).toString() + ((Long)uuid.getLeastSignificantBits()).toString();
+            cache.put(user.getLoginId(), sessionKey);
+        }
 
-        // TODO: Put session key inside the cache, return the same session keys if there is one in cache
+        sessionKey = cache.asMap().get(user.getLoginId());
         response.setSessionKey(sessionKey);
-
 
         return response;
     }

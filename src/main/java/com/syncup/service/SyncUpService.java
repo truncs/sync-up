@@ -7,6 +7,9 @@ package com.syncup.service;
  * Time: 6:03 AM
  * To change this template use File | Settings | File Templates.
  */
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.syncup.service.auth.ExampleAuthenticator;
 import com.syncup.service.cli.RenderCommand;
 import com.syncup.service.cli.SetupDatabaseCommand;
@@ -22,6 +25,8 @@ import com.yammer.dropwizard.bundles.AssetsBundle;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.db.Database;
 import com.yammer.dropwizard.db.DatabaseFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class SyncUpService extends Service<SyncUpConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -47,6 +52,10 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         final Database db = factory.build(configuration.getDatabaseConfiguration(), "mysql");
         final PeopleDAO peopleDAO = db.onDemand(PeopleDAO.class);
         final UserDAO userDAO = db.onDemand(UserDAO.class);
+        final Cache<String, String> cache = CacheBuilder.newBuilder()
+                .maximumSize(10)
+                .expireAfterAccess(120, TimeUnit.MINUTES).build();
+
 
         environment.addHealthCheck(new TemplateHealthCheck(template));
         environment.addResource(new HelloWorldResource(template));
@@ -55,7 +64,7 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         environment.addResource(new PeopleResource(peopleDAO));
         environment.addResource(new PersonResource(peopleDAO));
         environment.addResource(new SignUpResource(userDAO));
-        environment.addResource(new LogInResource(userDAO));
+        environment.addResource(new LogInResource(userDAO, cache));
     }
 
 }
