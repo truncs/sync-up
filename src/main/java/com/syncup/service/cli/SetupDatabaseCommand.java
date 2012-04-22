@@ -10,6 +10,7 @@ package com.syncup.service.cli;
 
 import com.syncup.service.db.PeopleDAO;
 import com.syncup.service.SyncUpConfiguration;
+import com.syncup.service.db.UserDAO;
 import com.yammer.dropwizard.AbstractService;
 import com.yammer.dropwizard.cli.ConfiguredCommand;
 import com.yammer.dropwizard.config.Environment;
@@ -31,11 +32,13 @@ public class SetupDatabaseCommand extends ConfiguredCommand<SyncUpConfiguration>
         final Environment environment = new Environment(configuration, service);
         //service.initializeWithBundles(configuration, environment);
         final DatabaseFactory factory = new DatabaseFactory(environment);
-        final Database db = factory.build(configuration.getDatabaseConfiguration(), "h2");
+        final Database db = factory.build(configuration.getDatabaseConfiguration(), "mysql");
         final PeopleDAO peopleDAO = db.onDemand(PeopleDAO.class);
+        final UserDAO userDAO = db.onDemand(UserDAO.class);
 
         log.info("creating tables.");
         peopleDAO.createPeopleTable();
+        userDAO.createUserTable();
 
     }
 }

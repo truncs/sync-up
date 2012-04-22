@@ -13,11 +13,9 @@ import com.syncup.service.cli.SetupDatabaseCommand;
 import com.syncup.service.core.Template;
 import com.syncup.service.core.User;
 import com.syncup.service.db.PeopleDAO;
+import com.syncup.service.db.UserDAO;
 import com.syncup.service.health.TemplateHealthCheck;
-import com.syncup.service.resources.HelloWorldResource;
-import com.syncup.service.resources.PeopleResource;
-import com.syncup.service.resources.PersonResource;
-import com.syncup.service.resources.ProtectedResource;
+import com.syncup.service.resources.*;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.bundles.AssetsBundle;
@@ -48,7 +46,7 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         final DatabaseFactory factory = new DatabaseFactory(environment);
         final Database db = factory.build(configuration.getDatabaseConfiguration(), "mysql");
         final PeopleDAO peopleDAO = db.onDemand(PeopleDAO.class);
-
+        final UserDAO userDAO = db.onDemand(UserDAO.class);
 
         environment.addHealthCheck(new TemplateHealthCheck(template));
         environment.addResource(new HelloWorldResource(template));
@@ -56,6 +54,7 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
 
         environment.addResource(new PeopleResource(peopleDAO));
         environment.addResource(new PersonResource(peopleDAO));
+        environment.addResource(new SignUpResource(userDAO));
     }
 
 }
