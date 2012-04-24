@@ -56,12 +56,12 @@ public class LogInResource {
         User user = userDAO.findByLoginId(request.getLoginId());
 
         if (user == null)
-            throw new WebApplicationException(401);
+            throw new WebApplicationException(400);
 
         String password = DigestUtils.sha256Hex(request.getPassword() + user.getSalt()).toString();
 
         if (!password.equals(user.getPassword()))
-             throw new WebApplicationException(404);
+             throw new WebApplicationException(400);
 
         LogInResponse response = new LogInResponse();
         response.setLoginId(user.getLoginId());
