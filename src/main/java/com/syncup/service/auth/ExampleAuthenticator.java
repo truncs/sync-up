@@ -17,7 +17,7 @@ public class ExampleAuthenticator implements Authenticator<BasicCredentials, Use
     @Override
     public Optional<User> authenticate(BasicCredentials credentials) throws AuthenticationException {
         if ("secret".equals(credentials.getPassword())) {
-            return Optional.of(new User(credentials.getUsername()));
+            return Optional.absent();
         }
         return Optional.absent();
     }

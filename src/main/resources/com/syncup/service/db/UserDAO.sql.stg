@@ -1,7 +1,7 @@
 group UserDAO;
 
 createUserTable() ::= <<
-  create table user (id Serial primary key, name varchar(255), loginId varchar(100), password varchar(300), emailId varchar(255), salt varchar(50), sessionKey varchar(255))
+  create table user (id Serial primary key, name varchar(255), loginId varchar(100), password varchar(300), emailId varchar(255), salt varchar(20), sessionKey varchar(255))
 >>
 
 findById() ::= <<
@@ -9,7 +9,7 @@ findById() ::= <<
 >>
 
 findByLoginId() ::= <<
-  select id, name, loginId, password, emailId, salt, sessionKe = :loginId
+  select id, name, loginId, password, emailId, salt, sessionKey from user where loginId = :loginId
 >>
 
 create() ::= <<

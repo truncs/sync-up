@@ -38,6 +38,12 @@
         </dependency>
         <!-- Small self contained database to illustrate the features of JDBI -->
         <dependency>
+            <groupId>com.yammer.dropwizard</groupId>
+            <artifactId>dropwizard-testing</artifactId>
+            <version>0.4.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.9</version>
@@ -48,6 +54,7 @@
             <artifactId>dropwizard-auth</artifactId>
             <version>0.4.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

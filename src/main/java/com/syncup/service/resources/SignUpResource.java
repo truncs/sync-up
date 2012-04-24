@@ -32,13 +32,14 @@ public class SignUpResource {
     @POST
     public Response createUser(User user) {
 
-        if (user.getLoginId() == null || user.getPassword() == null) {
+        if (user.getLoginId() == null || user.getPassword() == null  ||
+                user.getLoginId().isEmpty() || user.getPassword().isEmpty()) {
             throw new WebApplicationException(400);
         }
         if (userDAO.findByLoginId(user.getLoginId()) != null)
             throw new WebApplicationException(409);
         user.setSalt(RandomStringUtils.randomAscii(20));
-        String password = DigestUtils.sha(user.getPassword() + user.getSalt()).toString();
+        String password = DigestUtils.sha256Hex(user.getPassword() + user.getSalt()).toString();
         user.setPassword(password);
         final long personId = userDAO.create(user);
 

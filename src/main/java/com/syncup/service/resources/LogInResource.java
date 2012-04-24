@@ -58,10 +58,10 @@ public class LogInResource {
         if (user == null)
             throw new WebApplicationException(401);
 
-        String password = DigestUtils.sha(request.getPassword() + user.getSalt()).toString();
-        if (!password.equals(user.getPassword()))
-             throw new WebApplicationException(401);
+        String password = DigestUtils.sha256Hex(request.getPassword() + user.getSalt()).toString();
 
+        if (!password.equals(user.getPassword()))
+             throw new WebApplicationException(404);
 
         LogInResponse response = new LogInResponse();
         response.setLoginId(user.getLoginId());
@@ -69,7 +69,7 @@ public class LogInResource {
         String sessionKey;
         if (!cache.asMap().containsKey(user.getLoginId())) {
             UUID uuid = UUID.randomUUID();
-            sessionKey = ((Long)uuid.getMostSignificantBits()).toString() + ((Long)uuid.getLeastSignificantBits()).toString();
+            sessionKey = uuid.toString();
             cache.put(user.getLoginId(), sessionKey);
         }
 
