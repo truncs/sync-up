@@ -1,0 +1,21 @@
+group PresentationDAO;
+
+createPresentationTable() ::= <<
+  create table presentation (id Serial primary key, name varchar(255), loginId varchar(100), folderName varchar(300))
+>>
+
+findById() ::= <<
+  select id, name, loginId, folderName from presentation where id = :id
+>>
+
+findByLoginId() ::= <<
+  select id, name, loginId, folderName from presentation where loginId = :loginId
+>>
+
+create() ::= <<
+  insert into presentation (name, loginId, folderName) values (:name, :loginId, :folderName)
+>>
+
+findAll() ::= <<
+  select id, name, loginId, folderName from presentation
+>>

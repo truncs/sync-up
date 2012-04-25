@@ -1,0 +1,21 @@
+group AccessDAO;
+
+createAccessTable() ::= <<
+  create table access (id Serial primary key, presentationId bigint(20), loginId varchar(100), isPresenter int)
+>>
+
+findById() ::= <<
+  select id, presentationId, loginId, isPresenter from access where id = :id
+>>
+
+findByLoginId() ::= <<
+  select id, presentationId, loginId, isPresenter from access where loginId = :loginId
+>>
+
+create() ::= <<
+  insert into access (presentationId, loginId, isPresenter) values (:presentationId, :loginId, :isPresenter)
+>>
+
+findAll() ::= <<
+  select id, presentationId, loginId, isPresenter from access
+>>
