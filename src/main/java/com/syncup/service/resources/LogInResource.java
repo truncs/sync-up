@@ -19,14 +19,16 @@ package com.syncup.service.resources;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.syncup.service.core.LogInRequest;
-import com.syncup.service.core.LogInResponse;
-import com.syncup.service.core.User;
+import com.google.common.collect.ImmutableList;
+import com.syncup.service.core.*;
+import com.syncup.service.db.AccessDAO;
+import com.syncup.service.db.PresentationDAO;
 import com.syncup.service.db.UserDAO;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,10 +41,14 @@ import org.apache.commons.lang.RandomStringUtils;
 public class LogInResource {
 
     private final UserDAO userDAO;
+    private final PresentationDAO presentationDAO;
+    private final AccessDAO accessDAO;
     private final Cache<String, String> cache;
 
-    public LogInResource (UserDAO userDAO, Cache<String, String> cache) {
+    public LogInResource (UserDAO userDAO, PresentationDAO presentationDAO, AccessDAO accessDAO, Cache<String, String> cache) {
         this.userDAO = userDAO;
+        this.presentationDAO = presentationDAO;
+        this.accessDAO = accessDAO;
         this.cache = cache;
     }
 
@@ -75,6 +81,13 @@ public class LogInResource {
 
         sessionKey = cache.asMap().get(user.getLoginId());
         response.setSessionKey(sessionKey);
+        List<Access> accessList = accessDAO.findByLoginId(user.getLoginId());
+        List<Presentation> presentationList = new LinkedList<Presentation>();
+        for (Access access : accessList) {
+            presentationList.add(presentationDAO.findById(access.getPresentationId()));
+        }
+
+        response.setPresentationsList(presentationList);
 
         return response;
     }

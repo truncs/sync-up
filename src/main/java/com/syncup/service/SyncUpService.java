@@ -15,7 +15,9 @@ import com.syncup.service.cli.RenderCommand;
 import com.syncup.service.cli.SetupDatabaseCommand;
 import com.syncup.service.core.Template;
 import com.syncup.service.core.User;
+import com.syncup.service.db.AccessDAO;
 import com.syncup.service.db.PeopleDAO;
+import com.syncup.service.db.PresentationDAO;
 import com.syncup.service.db.UserDAO;
 import com.syncup.service.health.TemplateHealthCheck;
 import com.syncup.service.resources.*;
@@ -52,6 +54,8 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         final Database db = factory.build(configuration.getDatabaseConfiguration(), "mysql");
         final PeopleDAO peopleDAO = db.onDemand(PeopleDAO.class);
         final UserDAO userDAO = db.onDemand(UserDAO.class);
+        final PresentationDAO presentationDAO = db.onDemand(PresentationDAO.class);
+        final AccessDAO accessDAO = db.onDemand(AccessDAO.class);
         final Cache<String, String> cache = CacheBuilder.newBuilder()
                 .maximumSize(10)
                 .expireAfterAccess(120, TimeUnit.MINUTES).build();
@@ -64,7 +68,7 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         environment.addResource(new PeopleResource(peopleDAO));
         environment.addResource(new PersonResource(peopleDAO));
         environment.addResource(new SignUpResource(userDAO));
-        environment.addResource(new LogInResource(userDAO, cache));
+        environment.addResource(new LogInResource(userDAO, presentationDAO, accessDAO, cache));
     }
 
 }

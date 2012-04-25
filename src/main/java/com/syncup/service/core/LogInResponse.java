@@ -1,5 +1,7 @@
 package com.syncup.service.core;
 
+import java.util.List;
+
 /**
  * Copyright (c) 2012, aditya
  * All rights reserved.
@@ -23,6 +25,16 @@ public class LogInResponse {
     private String loginId;
     private String sessionKey;
     private int nonce;
+
+    public List<Presentation> getPresentationsList() {
+        return presentationsList;
+    }
+
+    public void setPresentationsList(List<Presentation> presentationsList) {
+        this.presentationsList = presentationsList;
+    }
+
+    private List<Presentation> presentationsList;
 
     public String getSessionKey() {
         return sessionKey;
