@@ -42,6 +42,9 @@ public class SetupDatabaseCommand extends ConfiguredCommand<SyncUpConfiguration>
 
         log.info("creating tables.");
         //peopleDAO.createPeopleTable();
+        userDAO.dropUserTable();
+        presentationDAO.dropPresentationTable();
+        accessDAO.dropAccessTable();
         userDAO.createUserTable();
         presentationDAO.createPresentationTable();
         accessDAO.createAccessTable();

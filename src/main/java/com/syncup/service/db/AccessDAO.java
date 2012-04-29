@@ -39,4 +39,6 @@ public interface AccessDAO {
     @SqlQuery
     ImmutableList<Access> findAll();
 
+    @SqlUpdate
+    void dropAccessTable();
 }

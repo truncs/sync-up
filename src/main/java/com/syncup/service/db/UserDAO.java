@@ -38,4 +38,7 @@ public interface UserDAO {
     @SqlQuery
     ImmutableList<User> findAll();
 
+    @SqlUpdate
+    void dropUserTable();
+
 }

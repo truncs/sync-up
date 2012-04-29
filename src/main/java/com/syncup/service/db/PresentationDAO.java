@@ -39,4 +39,7 @@ public interface PresentationDAO {
     @SqlQuery
     ImmutableList<Presentation> findAll();
 
+    @SqlUpdate
+    void dropPresentationTable();
+
 }

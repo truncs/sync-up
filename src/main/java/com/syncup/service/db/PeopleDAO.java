@@ -35,4 +35,6 @@ public interface PeopleDAO {
     @SqlQuery
     ImmutableList<Person> findAll();
 
+    @SqlUpdate
+    void dropPeopleTable();
 }
