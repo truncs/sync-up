@@ -8,8 +8,10 @@ package com.syncup.service.cli;
  * To change this template use File | Settings | File Templates.
  */
 
+import com.syncup.service.db.AccessDAO;
 import com.syncup.service.db.PeopleDAO;
 import com.syncup.service.SyncUpConfiguration;
+import com.syncup.service.db.PresentationDAO;
 import com.syncup.service.db.UserDAO;
 import com.yammer.dropwizard.AbstractService;
 import com.yammer.dropwizard.cli.ConfiguredCommand;
@@ -35,10 +37,14 @@ public class SetupDatabaseCommand extends ConfiguredCommand<SyncUpConfiguration>
         final Database db = factory.build(configuration.getDatabaseConfiguration(), "mysql");
         final PeopleDAO peopleDAO = db.onDemand(PeopleDAO.class);
         final UserDAO userDAO = db.onDemand(UserDAO.class);
+        final PresentationDAO presentationDAO = db.onDemand(PresentationDAO.class);
+        final AccessDAO accessDAO = db.onDemand(AccessDAO.class);
 
         log.info("creating tables.");
-        peopleDAO.createPeopleTable();
+        //peopleDAO.createPeopleTable();
         userDAO.createUserTable();
+        presentationDAO.createPresentationTable();
+        accessDAO.createAccessTable();
 
     }
 }

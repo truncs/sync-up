@@ -24,7 +24,7 @@ import org.skife.jdbi.v2.tweak.BeanMapperFactory;
 public interface AccessDAO {
 
     @SqlUpdate
-    void createUserTable();
+    void createAccessTable();
 
     @SqlQuery
     Access findById(@Bind("id") Long id);

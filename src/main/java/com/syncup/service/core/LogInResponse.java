@@ -25,6 +25,7 @@ public class LogInResponse {
     private String loginId;
     private String sessionKey;
     private int nonce;
+    private List<Presentation> presentationsList;
 
     public List<Presentation> getPresentationsList() {
         return presentationsList;
@@ -33,8 +34,6 @@ public class LogInResponse {
     public void setPresentationsList(List<Presentation> presentationsList) {
         this.presentationsList = presentationsList;
     }
-
-    private List<Presentation> presentationsList;
 
     public String getSessionKey() {
         return sessionKey;
