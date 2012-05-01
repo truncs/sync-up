@@ -32,6 +32,9 @@ public interface AccessDAO {
     @SqlQuery
     ImmutableList<Access> findByLoginId(@Bind("loginId") String id);
 
+    @SqlQuery
+    String findByLoginIdPresentationId(@Bind("loginId") String id,  @Bind("presentationId")long presentationId);
+
     @SqlUpdate
     @GetGeneratedKeys
     long create(@BindBean Access access);

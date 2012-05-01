@@ -19,3 +19,7 @@ create() ::= <<
 findAll() ::= <<
   select id, name, loginId, folderName from presentation
 >>
+
+dropPresentationTable() ::= <<
+  drop table if exists presentation
+>>

@@ -19,3 +19,7 @@ create() ::= <<
 findAll() ::= <<
   select id, name, loginId, password, emailId, salt, sessionKey from user
 >>
+
+dropUserTable() ::= <<
+  drop table if exists user
+>>

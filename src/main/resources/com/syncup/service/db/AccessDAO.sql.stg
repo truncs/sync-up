@@ -19,3 +19,12 @@ create() ::= <<
 findAll() ::= <<
   select id, presentationId, loginId, isPresenter from access
 >>
+
+findByLoginIdPresentationId ::= <<
+  select loginId from access where loginId = :loginId and presentationId = :presentationId
+>>
+
+dropAccessTable() ::= <<
+  drop table if exists access
+>>
+
