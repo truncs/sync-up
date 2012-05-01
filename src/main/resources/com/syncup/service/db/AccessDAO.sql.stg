@@ -20,7 +20,7 @@ findAll() ::= <<
   select id, presentationId, loginId, isPresenter from access
 >>
 
-findByLoginIdPresentationId ::= <<
+findByLoginIdPresentationId() ::= <<
   select loginId from access where loginId = :loginId and presentationId = :presentationId
 >>
 

@@ -37,6 +37,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import com.google.common.cache.Cache;
+import com.yammer.dropwizard.logging.Log;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.io.IOUtils;
@@ -49,6 +50,7 @@ public class PresentationResource {
     private final PresentationDAO presentationDAO;
     private final AccessDAO accessDAO;
     private final Cache<String, String> cache;
+    final Log log = Log.forClass(PresentationResource.class);
 
     public PresentationResource (UserDAO userDAO, PresentationDAO presentationDAO, AccessDAO accessDAO, Cache<String, String> cache) {
         this.userDAO = userDAO;
@@ -59,21 +61,26 @@ public class PresentationResource {
 
     // TODO check in access if the user has access to the presentation
     @GET
-    public StreamingOutput getPresentation(@PathParam("presentation_id") long id
-                                          // @HeaderParam("login-id") String loginId,
-                                           /*@HeaderParam("session-key") String sessionKey*/) {
+    public StreamingOutput getPresentation(@PathParam("presentation_id") long id,
+                                           @HeaderParam("login-id") String loginId,
+                                           @HeaderParam("session-key") String sessionKey) {
         // TODO get the loginid and the session id from the request headers
         // and check if they are correct
         // Also check if the user has access to the presentation
-       /* if (cache.asMap().get(loginId) != sessionKey)
+        if (sessionKey.isEmpty() || sessionKey == null)
             throw new WebApplicationException(401);
+        if (loginId.isEmpty() || loginId == null)
+            throw new WebApplicationException(401);
+        if (!sessionKey.equals(cache.asMap().get(loginId)))
+            throw new WebApplicationException(401);
+
         if(accessDAO.findByLoginIdPresentationId(loginId, id) == null)
-            throw new WebApplicationException(401);*/
+            throw new WebApplicationException(401);
 
         Presentation presentation = presentationDAO.findById(id);
         // Filesystem code to fetch the file
         // should change to amazon s3 or dropbox
-        System.out.println(presentation.getFolderName());
+        log.info(presentation.getFolderName());
         try {
             final InputStream inputStream = new FileInputStream(presentation.getFolderName());
 
@@ -92,46 +99,5 @@ public class PresentationResource {
         }
 
     }
-
-    @POST
-    public LogInResponse logIn(LogInRequest request) {
-
-        if (request.getLoginId() == null || request.getPassword() == null) {
-            throw new WebApplicationException(400);
-        }
-
-        User user = userDAO.findByLoginId(request.getLoginId());
-
-        if (user == null)
-            throw new WebApplicationException(400);
-
-        String password = DigestUtils.sha256Hex(request.getPassword() + user.getSalt()).toString();
-
-        if (!password.equals(user.getPassword()))
-            throw new WebApplicationException(400);
-
-        LogInResponse response = new LogInResponse();
-        response.setLoginId(user.getLoginId());
-        response.setNonce(request.getNonce());
-        String sessionKey;
-        if (!cache.asMap().containsKey(user.getLoginId())) {
-            UUID uuid = UUID.randomUUID();
-            sessionKey = uuid.toString();
-            cache.put(user.getLoginId(), sessionKey);
-        }
-
-        sessionKey = cache.asMap().get(user.getLoginId());
-        response.setSessionKey(sessionKey);
-        List<Access> accessList = accessDAO.findByLoginId(user.getLoginId());
-        List<Presentation> presentationList = new LinkedList<Presentation>();
-        for (Access access : accessList) {
-            presentationList.add(presentationDAO.findById(access.getPresentationId()));
-        }
-
-        response.setPresentationsList(presentationList);
-
-        return response;
-    }
-
 
 }
