@@ -20,6 +20,7 @@ package com.syncup.service.resources;
  */
 
 import com.google.common.collect.ImmutableList;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.syncup.service.core.*;
 import com.syncup.service.db.AccessDAO;
 import com.syncup.service.db.PresentationDAO;
@@ -30,20 +31,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+import com.sun.jersey.multipart.FormDataParam;
 
 import com.google.common.cache.Cache;
 import com.yammer.dropwizard.logging.Log;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.io.IOUtils;
 
-@Path("/presentation/{presentation_id}")
-@Produces({"application/zip"})
+@Path("/presentation")
 public class PresentationResource {
 
     private final UserDAO userDAO;
@@ -59,12 +53,13 @@ public class PresentationResource {
         this.cache = cache;
     }
 
-    // TODO check in access if the user has access to the presentation
+    @Path("{presentation_id}")
+    @Produces({"application/zip"})
     @GET
     public StreamingOutput getPresentation(@PathParam("presentation_id") long id,
                                            @HeaderParam("login-id") String loginId,
                                            @HeaderParam("session-key") String sessionKey) {
-        // TODO get the loginid and the session id from the request headers
+        // Get the loginid and the session id from the request headers
         // and check if they are correct
         // Also check if the user has access to the presentation
         if (sessionKey.isEmpty() || sessionKey == null)
@@ -98,6 +93,23 @@ public class PresentationResource {
             throw new WebApplicationException(e);
         }
 
+    }
+
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @POST
+    public Response postPresentation(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition fcdsFile) {
+        //TODO    Write generic code for authentication and don't hardcode this value
+        String fileLocation = "/home/aditya/" + fcdsFile.getFileName();
+        try {
+            File destFile = new File(fileLocation);
+            OutputStream outputStream = new FileOutputStream(destFile);
+            outputStream.write(IOUtils.toByteArray(inputStream));
+        }
+        catch (Exception e){
+            throw new WebApplicationException(e);
+        }
+
+        return Response.ok().build();
     }
 
 }
