@@ -54,9 +54,9 @@ public class PresentationResource {
     }
 
     @Path("{presentation_id}")
-    @Produces({"application/zip"})
+   // @Produces({"application/zip"})
     @GET
-    public StreamingOutput getPresentation(@PathParam("presentation_id") long id,
+    public Response getPresentation(@PathParam("presentation_id") long id,
                                            @HeaderParam("login-id") String loginId,
                                            @HeaderParam("session-key") String sessionKey) {
         // Get the loginid and the session id from the request headers
@@ -77,17 +77,25 @@ public class PresentationResource {
         // should change to amazon s3 or dropbox
         log.info(presentation.getFolderName());
         try {
-            final InputStream inputStream = new FileInputStream(presentation.getFolderName());
+//            final InputStream inputStream = new FileInputStream(presentation.getFolderName());
+//
+//            return new StreamingOutput() {
+//                public void write(OutputStream output) throws IOException, WebApplicationException {
+//                    try {
+//                        output.write(IOUtils.toByteArray(inputStream));
+//                    } catch (Exception e) {
+//                        throw new WebApplicationException(e);
+//                    }
+//                }
+//            };
 
-            return new StreamingOutput() {
-                public void write(OutputStream output) throws IOException, WebApplicationException {
-                    try {
-                        output.write(IOUtils.toByteArray(inputStream));
-                    } catch (Exception e) {
-                        throw new WebApplicationException(e);
-                    }
-                }
-            };
+            final InputStream inputStream = new FileInputStream(presentation.getFolderName());
+            byte[] zipStream = IOUtils.toByteArray(inputStream);
+            return Response
+                    .ok(zipStream, MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                    .header("content-disposition","attachment; filename = " + presentation.getName() + ".zip")
+                    .build();
+
         }
         catch (Exception e) {
             throw new WebApplicationException(e);
