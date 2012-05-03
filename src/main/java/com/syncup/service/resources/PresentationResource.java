@@ -53,12 +53,13 @@ public class PresentationResource {
         this.cache = cache;
     }
 
-    @Path("{presentation_id}")
-   // @Produces({"application/zip"})
+    @Path("{presentation_id}/{slide_id}")
+    //@Produces({"application/zip"})
     @GET
     public Response getPresentation(@PathParam("presentation_id") long id,
                                            @HeaderParam("login-id") String loginId,
-                                           @HeaderParam("session-key") String sessionKey) {
+                                           @HeaderParam("session-key") String sessionKey,
+                                           @PathParam("slide_id") long slide_id) {
         // Get the loginid and the session id from the request headers
         // and check if they are correct
         // Also check if the user has access to the presentation
@@ -75,6 +76,9 @@ public class PresentationResource {
         Presentation presentation = presentationDAO.findById(id);
         // Filesystem code to fetch the file
         // should change to amazon s3 or dropbox
+        // Shouldn't do this
+        String fileName = presentation.getFolderName()
+                + presentation.getName() + '-' + slide_id + ".jpg";
         log.info(presentation.getFolderName());
         try {
 //            final InputStream inputStream = new FileInputStream(presentation.getFolderName());
@@ -89,15 +93,17 @@ public class PresentationResource {
 //                }
 //            };
 
-            final InputStream inputStream = new FileInputStream(presentation.getFolderName());
+            System.out.println(fileName);
+            final InputStream inputStream = new FileInputStream(fileName);
             byte[] zipStream = IOUtils.toByteArray(inputStream);
             return Response
                     .ok(zipStream, MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                    .header("content-disposition","attachment; filename = " + presentation.getName() + ".zip")
+                    .header("content-disposition","attachment; filename = " + fileName + ".jpg")
                     .build();
 
         }
         catch (Exception e) {
+            System.out.println(e.getStackTrace());
             throw new WebApplicationException(e);
         }
 
