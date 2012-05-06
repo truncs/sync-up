@@ -1,7 +1,7 @@
 group PresentationDAO;
 
 createPresentationTable() ::= <<
-  create table presentation (id Serial primary key, name varchar(255), loginId varchar(100), folderName varchar(300), long noSlides)
+  create table presentation (id Serial primary key, name varchar(255), loginId varchar(100), folderName varchar(300), noSlides int)
 >>
 
 findById() ::= <<
