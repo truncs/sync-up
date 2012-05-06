@@ -27,6 +27,10 @@ public class Presentation {
     private String name;
     private String loginId;
     private String folderName;
+
+
+    private long noSlides;
+
     //TODO go live dates for the presentations
 
     public long getId() {
@@ -60,5 +64,14 @@ public class Presentation {
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
+
+    public long getNoSlides() {
+        return noSlides;
+    }
+
+    public void setNoSlides(long noSlides) {
+        this.noSlides = noSlides;
+    }
+
 
 }

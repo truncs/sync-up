@@ -1,23 +1,23 @@
 group PresentationDAO;
 
 createPresentationTable() ::= <<
-  create table presentation (id Serial primary key, name varchar(255), loginId varchar(100), folderName varchar(300))
+  create table presentation (id Serial primary key, name varchar(255), loginId varchar(100), folderName varchar(300), long noSlides)
 >>
 
 findById() ::= <<
-  select id, name, loginId, folderName from presentation where id = :id
+  select id, name, loginId, folderName, noSlides from presentation where id = :id
 >>
 
 findByLoginId() ::= <<
-  select id, name, loginId, folderName from presentation where loginId = :loginId
+  select id, name, loginId, folderName, noSlides from presentation where loginId = :loginId
 >>
 
 create() ::= <<
-  insert into presentation (name, loginId, folderName) values (:name, :loginId, :folderName)
+  insert into presentation (name, loginId, folderName, noSlides) values (:name, :loginId, :folderName, :noSlides)
 >>
 
 findAll() ::= <<
-  select id, name, loginId, folderName from presentation
+  select id, name, loginId, folderName, noSlides from presentation
 >>
 
 dropPresentationTable() ::= <<
