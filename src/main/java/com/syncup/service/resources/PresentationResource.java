@@ -31,6 +31,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.sun.jersey.multipart.FormDataParam;
 
 import com.google.common.cache.Cache;
@@ -44,13 +47,18 @@ public class PresentationResource {
     private final PresentationDAO presentationDAO;
     private final AccessDAO accessDAO;
     private final Cache<String, String> cache;
+    private final Cache<String , List<PathPoint>> syncCache;
+
     final Log log = Log.forClass(PresentationResource.class);
 
-    public PresentationResource (UserDAO userDAO, PresentationDAO presentationDAO, AccessDAO accessDAO, Cache<String, String> cache) {
+    public PresentationResource (UserDAO userDAO, PresentationDAO presentationDAO,
+                                 AccessDAO accessDAO, Cache<String, String> cache,
+                                 Cache<String, List<PathPoint>> syncCache) {
         this.userDAO = userDAO;
         this.presentationDAO = presentationDAO;
         this.accessDAO = accessDAO;
         this.cache = cache;
+        this.syncCache = syncCache;
     }
 
     @Path("{presentation_id}/{slide_id}")
@@ -95,9 +103,9 @@ public class PresentationResource {
 
             System.out.println(fileName);
             final InputStream inputStream = new FileInputStream(fileName);
-            byte[] zipStream = IOUtils.toByteArray(inputStream);
+            byte[] byteStream = IOUtils.toByteArray(inputStream);
             return Response
-                    .ok(zipStream, MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                    .ok(byteStream, MediaType.APPLICATION_OCTET_STREAM_TYPE)
                     .header("content-disposition","attachment; filename = " + fileName + ".jpg")
                     .build();
 
@@ -124,6 +132,46 @@ public class PresentationResource {
         }
 
         return Response.ok().build();
+    }
+
+
+    @Path("{presentation_id}/{slide_id}/sync/")
+    @GET
+    public SyncResponse getPathPoint(@PathParam("presentation_id") long id,
+                                  @HeaderParam("login-id") String loginId,
+                                  @HeaderParam("session-key") String sessionKey,
+                                  @PathParam("slide_id") long slide_id) {
+
+        // TODO is this a good way ?
+        String syncKey = buildSyncCacheKey(id, slide_id);
+        List<PathPoint> pathPoints = syncCache.asMap().get(syncKey);
+        SyncResponse response = new SyncResponse();
+        response.setPathPointList(pathPoints);
+        response.setPresentationId(id);
+        response.setSlideId(slide_id);
+        return response;
+
+    }
+
+    @Path("{presentation_id}/{slide_id}/sync/")
+    @POST
+    public Response postPathPoint(@PathParam("presentation_id") long id,
+                                  @HeaderParam("login-id") String loginId,
+                                  @HeaderParam("session-key") String sessionKey,
+                                  @PathParam("slide_id") long slide_id, PathPoint pathPoint) {
+
+        String syncKey = buildSyncCacheKey(id, slide_id);
+        List<PathPoint> pathPoints = syncCache.asMap().get(syncKey);
+        if (pathPoints == null)
+            pathPoints = new LinkedList<PathPoint>();
+        pathPoints.add(pathPoint);
+        syncCache.put(syncKey, pathPoints);
+        return Response.ok().build();
+    }
+
+
+    private String buildSyncCacheKey(long id, long slide_id) {
+        return (id + ":" + slide_id);
     }
 
 }

@@ -13,6 +13,7 @@ import com.google.common.cache.CacheLoader;
 import com.syncup.service.auth.ExampleAuthenticator;
 import com.syncup.service.cli.RenderCommand;
 import com.syncup.service.cli.SetupDatabaseCommand;
+import com.syncup.service.core.PathPoint;
 import com.syncup.service.core.Template;
 import com.syncup.service.core.User;
 import com.syncup.service.db.AccessDAO;
@@ -28,6 +29,7 @@ import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.db.Database;
 import com.yammer.dropwizard.db.DatabaseFactory;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SyncUpService extends Service<SyncUpConfiguration> {
@@ -57,9 +59,12 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         final PresentationDAO presentationDAO = db.onDemand(PresentationDAO.class);
         final AccessDAO accessDAO = db.onDemand(AccessDAO.class);
         final Cache<String, String> cache = CacheBuilder.newBuilder()
-                .maximumSize(10)
+                .maximumSize(100)
                 .expireAfterAccess(120, TimeUnit.MINUTES).build();
 
+        final Cache<String, List<PathPoint>> syncCache = CacheBuilder.newBuilder()
+                .maximumSize(100)
+                .expireAfterAccess(120, TimeUnit.MINUTES).build();
 
         environment.addHealthCheck(new TemplateHealthCheck(template));
         environment.addResource(new HelloWorldResource(template));
@@ -69,7 +74,7 @@ public class SyncUpService extends Service<SyncUpConfiguration> {
         environment.addResource(new PersonResource(peopleDAO));
         environment.addResource(new SignUpResource(userDAO));
         environment.addResource(new LogInResource(userDAO, presentationDAO, accessDAO, cache));
-        environment.addResource(new PresentationResource(userDAO, presentationDAO, accessDAO, cache));
+        environment.addResource(new PresentationResource(userDAO, presentationDAO, accessDAO, cache, syncCache));
     }
 
 }
